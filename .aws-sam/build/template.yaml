@@ -7,41 +7,39 @@ Resources:
       TableName: Users
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        - AttributeName: user_id
-          AttributeType: S
+      - AttributeName: user_id
+        AttributeType: S
       KeySchema:
-        - AttributeName: user_id
-          KeyType: HASH
-
+      - AttributeName: user_id
+        KeyType: HASH
   TasksTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: Tasks
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        - AttributeName: task_id
-          AttributeType: S
-        - AttributeName: assigned_to
-          AttributeType: S
-        - AttributeName: status
-          AttributeType: S
+      - AttributeName: task_id
+        AttributeType: S
+      - AttributeName: assigned_to
+        AttributeType: S
+      - AttributeName: status
+        AttributeType: S
       KeySchema:
-        - AttributeName: task_id
-          KeyType: HASH
+      - AttributeName: task_id
+        KeyType: HASH
       GlobalSecondaryIndexes:
-        - IndexName: AssignedToIndex
-          KeySchema:
-            - AttributeName: assigned_to
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
-        - IndexName: StatusIndex
-          KeySchema:
-            - AttributeName: status
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
-
+      - IndexName: AssignedToIndex
+        KeySchema:
+        - AttributeName: assigned_to
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+      - IndexName: StatusIndex
+        KeySchema:
+        - AttributeName: status
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
   StaticWebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -50,65 +48,67 @@ Resources:
         ErrorDocument: error.html
       OwnershipControls:
         Rules:
-          - ObjectOwnership: BucketOwnerPreferred
+        - ObjectOwnership: BucketOwnerPreferred
       BucketName: static-website-bucket
-
   StaticWebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref StaticWebsiteBucket
+      Bucket:
+        Ref: StaticWebsiteBucket
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
-          - Effect: Allow
-            Principal: "*"
-            Action: "s3:GetObject"
-            Resource: 
-              Fn::Sub: "${StaticWebsiteBucket.Arn}/*"
-
-
+        - Effect: Allow
+          Principal: '*'
+          Action: s3:GetObject
+          Resource:
+            Fn::Sub: ${StaticWebsiteBucket.Arn}/*
   FlaskFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: flask-backend/
+      CodeUri: FlaskFunction
       Handler: app.lambda_handler
       Runtime: python3.12
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: 
-              Ref: UsersTable
-        - DynamoDBCrudPolicy:
-            TableName: 
-              Ref: TasksTable
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: UsersTable
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: TasksTable
       Events:
         Api:
           Type: HttpApi
           Properties:
             Path: /{proxy+}
             Method: ANY
-
+    Metadata:
+      SamResourceId: FlaskFunction
   TaskNotificationTopic:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: TaskNotifications
-
   ReminderFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: events/
+      CodeUri: ReminderFunction
       Handler: reminder_function.lambda_handler
       Runtime: python3.12
       Policies:
-        - SNSPublishMessagePolicy:
-            TopicName: TaskNotifications
-        - DynamoDBReadPolicy:
-            TableName:
-              Ref: TasksTable
-
+      - SNSPublishMessagePolicy:
+          TopicName: TaskNotifications
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: TasksTable
+    Metadata:
+      SamResourceId: ReminderFunction
   ReminderRule:
     Type: AWS::Events::Rule
     Properties:
       ScheduleExpression: rate(1 day)
       Targets:
-        - Arn: !GetAtt ReminderFunction.Arn
-          Id: ReminderTarget
+      - Arn:
+          Fn::GetAtt:
+          - ReminderFunction
+          - Arn
+        Id: ReminderTarget
