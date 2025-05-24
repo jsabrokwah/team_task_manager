@@ -70,3 +70,4 @@ class AuthService:
         if not payload:
             return {"message": "Invalid token"}, 401
         return {"message": "Token is valid", "user_id": payload['user_id']}, 200
+    

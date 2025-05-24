@@ -113,3 +113,4 @@ class User:
     @staticmethod
     def generate_user_id():
         return 'user_'+str(datetime.now(datetime.timezone.utc).timestamp()).replace('.', '')+str(int(datetime.now(datetime.timezone.utc).microsecond))
+    

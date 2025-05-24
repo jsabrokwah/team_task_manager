@@ -72,19 +72,50 @@ Design and implement a Task Management System for a field team using AWS serverl
 
 **Tasks:**
 
-* Build static HTML/CSS/JS pages to:
+* **Design:**
 
-  * **Login / Dashboard** for admin and members.
-  * **Task list** views and **update forms**.
-* Host build artifacts on S3; invalidate CloudFront (if used) via SAM.
-* Implement client-side calls to your API Gateway endpoints with JWT auth headers.
+  * Create wireframes for the following pages:
+    * **Login Page:** A simple form for user authentication.
+    * **Admin Dashboard:** Displays task statistics, user management, and task creation forms.
+    * **Member Dashboard:** Displays assigned tasks and allows updates.
+    * **Task List View:** A table or card-based layout for viewing tasks.
+    * **Task Update Form:** A form to update task details (e.g., status, description).
+  
+* **Development:**
+
+  * Build static HTML/CSS/JS pages:
+    * **Login Page:** Includes fields for email and password, with client-side validation.
+    * **Admin Dashboard:** Includes task creation and user management sections.
+    * **Member Dashboard:** Displays assigned tasks with options to update status.
+    * **Task List View:** Fetches and displays tasks using API calls.
+    * **Task Update Form:** Allows users to update task details.
+  * Implement responsive design for mobile and desktop views.
+  * Use JavaScript to make client-side API calls to the backend endpoints with JWT authentication headers.
+
+* **Hosting:**
+
+  * Host the static site files on an S3 bucket configured for public read access.
+  * Use SAM to automate deployment and invalidate CloudFront cache (if applicable).
+
+* **Testing:**
+
+  * Test the frontend with mock API responses to ensure proper integration.
+  * Validate JWT authentication flows and error handling.
 
 **Deliverables:**
 
-* Static site files in CodeCommit branch.
-* Site deployed to S3 with correct bucket policy for public read.
+* Wireframes for all pages.
+* Static site files in a dedicated CodeCommit branch.
+* Fully functional site deployed to S3 with correct bucket policy for public read.
+* Documentation for frontend setup and API integration.
 
 ---
+
+## Additional Notes:
+
+* The frontend will use modern JavaScript (ES6+), html, and css files. Do not use any frontend framework
+* The design will prioritize simplicity and usability, ensuring that both admins and team members can easily navigate the system.
+
 
 ## Phase 5: Integration & Testing
 

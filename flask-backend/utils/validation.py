@@ -40,3 +40,4 @@ def validate_task_data(task_data):
     
     if not isinstance(task_data['due_date'], str):
         raise BadRequest("Due_date must be a string in ISO format.")
+    

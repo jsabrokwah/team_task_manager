@@ -104,6 +104,7 @@ Resources:
             TableName:
               Ref: TasksTable
 
+
   ReminderRule:
     Type: AWS::Events::Rule
     Properties:

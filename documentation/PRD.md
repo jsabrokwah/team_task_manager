@@ -47,11 +47,40 @@ This system is designed to manage tasks for a field team using AWS serverless in
 - EventBridge triggers reminders before task deadlines.
 - Notifications sent via email or SMS (configurable).
 
-### Frontend
 
-- HTML/CSS/JS-based static website.
-- Login page and dashboards for both roles.
-- Dynamic interaction via REST API using JWT.
+## Frontend Requirements:
+
+The frontend will serve as the primary interface for users to interact with the Task Management System. It will include the following features:
+
+1. **Login Page:**
+   * A form for user authentication with fields for email and password.
+   * Error messages for invalid credentials or missing fields.
+
+2. **Admin Dashboard:**
+   * Overview of task statistics (e.g., total tasks, pending tasks).
+   * Forms for creating and assigning tasks.
+   * User management section for adding, updating, or deleting users.
+
+3. **Member Dashboard:**
+   * List of assigned tasks with details such as title, description, and due date.
+   * Options to update task status (e.g., "In Progress," "Completed").
+
+4. **Task List View:**
+   * A table or card-based layout displaying all tasks for admins.
+   * Filters for task status, assigned user, and due date.
+
+5. **Task Update Form:**
+   * A form to update task details, including status, description, and due date.
+
+6. **Responsive Design:**
+   * Ensure compatibility with both desktop and mobile devices.
+
+7. **Integration with Backend:**
+   * Use JavaScript to make API calls to the backend endpoints.
+   * Include JWT authentication headers in all requests.
+
+8. **Error Handling:**
+   * Display user-friendly error messages for API failures or invalid inputs.
 
 ---
 

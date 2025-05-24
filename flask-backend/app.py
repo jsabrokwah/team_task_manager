@@ -35,3 +35,4 @@ app.add_url_rule('/user/<user_id>', view_func=user_controller.get_user, methods=
 
 if __name__ == '__main__':
     app.run(debug=True)
+    

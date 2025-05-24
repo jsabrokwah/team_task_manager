@@ -34,4 +34,4 @@ def refresh():
 @jwt_required
 def logout():
     # Implement logout logic if needed (e.g., blacklist the token)
-    return jsonify({"msg": "Logout successful"}), 200
+    return jsonify({"msg": "Logout successful"}), 200 
