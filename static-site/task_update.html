@@ -1,0 +1,57 @@
+<!-- Task Update Form -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Task</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Update Task</h1>
+    </header>
+    <main>
+        <form id="taskUpdateForm">
+            <label for="taskId">Task ID:</label>
+            <input type="text" id="taskId" name="taskId" required>
+
+            <label for="status">Status:</label>
+            <select id="status" name="status">
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="overdue">Overdue</option>
+            </select>
+
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="4"></textarea>
+
+            <label for="dueDate">Due Date:</label>
+            <input type="date" id="dueDate" name="dueDate">
+
+            <button type="submit">Update Task</button>
+        </form>
+        <div id="responseMessage"></div>
+    </main>
+    <script src="js/utils.js"></script>
+    <script src="js/tasks.js"></script>
+    <script>
+        document.getElementById('taskUpdateForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const taskId = document.getElementById('taskId').value;
+            const status = document.getElementById('status').value;
+            const description = document.getElementById('description').value;
+            const dueDate = document.getElementById('dueDate').value;
+
+            // Call a function to handle the task update (to be implemented in tasks.js)
+            updateTask(taskId, { status, description, due_date: dueDate })
+                .then(response => {
+                    document.getElementById('responseMessage').innerText = 'Task updated successfully!';
+                })
+                .catch(error => {
+                    document.getElementById('responseMessage').innerText = 'Error: ' + error.message;
+                });
+        });
+    </script>
+</body>
+</html>

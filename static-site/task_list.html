@@ -1,0 +1,67 @@
+<!-- Task List -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task List</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Task Management System</h1>
+        <nav>
+            <ul>
+                <li><a href="admin_dashboard.html">Admin Dashboard</a></li>
+                <li><a href="member_dashboard.html">Member Dashboard</a></li>
+                <li><a href="task_update.html">Ask Update</a></li>
+                <li><a href="index.html">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <h2>All Tasks</h2>
+        <div>
+            <label for="statusFilter">Filter by Status:</label>
+            <select id="statusFilter">
+                <option value="all">All</option>
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="overdue">Overdue</option>
+            </select>
+
+            <label for="assignedToFilter">Filter by Assigned User:</label>
+            <input type="text" id="assignedToFilter" placeholder="Enter user ID">
+
+            <label for="dueDateFilter">Filter by Due Date:</label>
+            <input type="date" id="dueDateFilter">
+            
+            <button id="filterButton">Filter</button>
+        </div>
+
+        <table id="taskTable">
+            <thead>
+                <tr>
+                    <th>Task ID</th>
+                    <th>Assigned To</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Task rows will be populated here by JavaScript -->
+            </tbody>
+        </table>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Task Management System</p>
+    </footer>
+
+    <script src="js/tasks.js"></script>
+</body>
+</html>

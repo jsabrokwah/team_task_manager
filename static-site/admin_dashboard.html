@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/admin.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Logout</a></li>
+                <li><a href="task_list.html">View All Tasks</a></li>
+                <li><a href="task_update.html">Ask Update</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="task-statistics">
+            <h2>Task Statistics</h2>
+            <div>
+                <p>Total Tasks: <span id="total-tasks">0</span></p>
+                <p>Pending Tasks: <span id="pending-tasks">0</span></p>
+                <p>Completed Tasks: <span id="completed-tasks">0</span></p>
+            </div>
+        </section>
+        <section id="user-management">
+            <h2>User Management</h2>
+            <button id="create-user-btn">Create User</button>
+            <div id="user-list">
+                <h3>Users</h3>
+                <ul id="users"></ul>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Task Management System</p>
+    </footer>
+</body>
+</html>
