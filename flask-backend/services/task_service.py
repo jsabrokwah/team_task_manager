@@ -20,8 +20,8 @@ class TaskService:
             'description': description,
             'status': status,
             'due_date': due_date,
-            'created_at': datetime.utcnow().isoformat(),
-            'updated_at': datetime.utcnow().isoformat()
+            'created_at': datetime.now(datetime.timezone.utc).isoformat(),
+            'updated_at': datetime.now(datetime.timezone.utc).isoformat()
         }
 
         self.tasks_table.put_item(Item=item)
@@ -52,20 +52,26 @@ class TaskService:
     def delete_task(self, task_id):
         self.tasks_table.delete_item(Key={'task_id': task_id})
 
-    def list_tasks(self, assigned_to=None, status=None):
-        filter_expression = []
-        expression_attribute_values = {}
+def list_tasks(self, assigned_to=None, status=None):
+    filter_expression = []
+    expression_attribute_values = {}
 
-        if assigned_to:
-            filter_expression.append("assigned_to = :assigned_to")
-            expression_attribute_values[":assigned_to"] = assigned_to
+    if assigned_to:
+        filter_expression.append("assigned_to = :assigned_to")
+        expression_attribute_values[":assigned_to"] = assigned_to
 
-        if status:
-            filter_expression.append("status = :status")
-            expression_attribute_values[":status"] = status
+    if status:
+        filter_expression.append("status = :status")
+        expression_attribute_values[":status"] = status
 
-        response = self.tasks_table.scan(
-            FilterExpression=" AND ".join(filter_expression) if filter_expression else None,
-            ExpressionAttributeValues=expression_attribute_values
-        )
+    try:
+        scan_kwargs = {}
+        if filter_expression:
+            scan_kwargs['FilterExpression'] = " AND ".join(filter_expression)
+            scan_kwargs['ExpressionAttributeValues'] = expression_attribute_values
+
+        response = self.tasks_table.scan(**scan_kwargs)
         return response.get('Items', [])
+    except Exception as e:
+        print(f"Error listing tasks: {str(e)}")
+        return []

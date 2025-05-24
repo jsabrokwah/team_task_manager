@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity
+from models.user_model import User
+from utils import jwt_helper
 from services.auth_service import AuthService
 from utils.validation import validate_login, validate_registration
 
+
 auth_bp = Blueprint('auth', __name__)
-auth_service = AuthService()
+auth_service = AuthService(User, jwt_helper)
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -17,15 +19,15 @@ def login():
     if not user:
         return jsonify({"msg": "Bad email or password"}), 401
 
-    access_token = create_access_token(identity=user['user_id'])
-    refresh_token = create_refresh_token(identity=user['user_id'])
+    access_token = jwt_helper.create_access_token(identity=user['user_id'])
+    refresh_token = jwt_helper.create_refresh_token(identity=user['user_id'])
     return jsonify(access_token=access_token, refresh_token=refresh_token), 200
 
 @auth_bp.route('/refresh', methods=['POST'])
 @jwt_refresh_token_required
 def refresh():
     current_user = get_jwt_identity()
-    access_token = create_access_token(identity=current_user)
+    access_token = jwt_helper.create_access_token(identity=current_user)
     return jsonify(access_token=access_token), 200
 
 @auth_bp.route('/logout', methods=['POST'])

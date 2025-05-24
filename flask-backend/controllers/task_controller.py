@@ -1,12 +1,14 @@
 from flask import request, jsonify
 from flask_restful import Resource
+import boto3
 from models.task_model import TaskModel
 from services.task_service import TaskService
 from utils.validation import validate_task_data
 
 class TaskController(Resource):
     def __init__(self):
-        self.task_service = TaskService()
+        dynamodb = boto3.resource('dynamodb')
+        self.task_service = TaskService(dynamodb)
 
     def get(self, task_id=None):
         if task_id:

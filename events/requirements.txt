@@ -2,6 +2,7 @@ boto3
 botocore
 jmespath
 python-dateutil
+python-dotenv
 s3transfer
 six
 urllib3
