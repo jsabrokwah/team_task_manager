@@ -26,3 +26,11 @@ flask-backend/.hypothesis/
 flask-backend/.env
 
 events/venv
+
+events/__pycache__/
+events/*.pyc
+events/*.pyo
+events/*.pyd
+
+
+.aws-sam
