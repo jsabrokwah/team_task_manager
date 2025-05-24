@@ -11,7 +11,7 @@ def lambda_handler(event, context):
     tasks_table = dynamodb.Table(os.environ['TASKS_TABLE'])
     
     # Get today's date and calculate the reminder date (24 hours from now)
-    today = datetime.utcnow()
+    today = datetime.now(datetime.timezone.utc)
     reminder_date = today + timedelta(days=1)
 
     # Scan the Tasks table for tasks due tomorrow
