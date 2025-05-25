@@ -9,7 +9,8 @@ click
 cryptography
 Flask
 flask-cors
-Flask-JWT-Extended
+flask-jwt-extended
+mangum
 Flask-RESTful
 Flask-Testing
 idna
@@ -17,7 +18,6 @@ iniconfig
 itsdangerous
 Jinja2
 jmespath
-jwt
 MarkupSafe
 moto
 packaging

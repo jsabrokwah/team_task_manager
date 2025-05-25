@@ -8,6 +8,7 @@ class AuthService:
         self.user_model = user_model
         self.jwt_helper = jwt_helper
 
+
     def register_user(self, user_data):
         # If user_data does not contain 'user_id', generate one
         if 'user_id' not in user_data:

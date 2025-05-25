@@ -2,19 +2,21 @@ from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
-from controllers.auth_controller import AuthController
+from mangum import Mangum
+from controllers import auth_controller
 from controllers.task_controller import TaskController
-from controllers.user_controller import UserController
+from controllers import user_controller
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
+
 # Initialize controllers
-auth_controller = AuthController()
+# auth_controller = AuthController()
 task_controller = TaskController()
-user_controller = UserController()
+# user_controller = UserController()
 
 # Set up routes
 app.add_url_rule('/login', view_func=auth_controller.login, methods=['POST'])
@@ -35,4 +37,6 @@ app.add_url_rule('/user/<user_id>', view_func=user_controller.get_user, methods=
 
 if __name__ == '__main__':
     app.run(debug=True)
-    
+
+# For AWS Lambda compatibility
+lambda_handler = Mangum(app)    

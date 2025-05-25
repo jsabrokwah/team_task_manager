@@ -26,6 +26,7 @@ class Task:
             'updated_at': self.updated_at
         }
 
+
     @classmethod
     def from_dict(cls, data):
         return cls(

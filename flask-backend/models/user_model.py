@@ -110,6 +110,7 @@ class User:
             print(f"Error deleting user: {e.response['Error']['Message']}")
             return False
     
+    
     @staticmethod
     def generate_user_id():
         return 'user_'+str(datetime.now(datetime.timezone.utc).timestamp()).replace('.', '')+str(int(datetime.now(datetime.timezone.utc).microsecond))

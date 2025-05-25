@@ -24,7 +24,22 @@ flask-backend/.coverage.*
 flask-backend/.hypothesis/
 flask-backend/.hypothesis/
 flask-backend/.env
-
+flask-backend/controllers/__pycache__/
+flask-backend/controllers/*.pyc
+flask-backend/controllers/*.pyo
+flask-backend/controllers/*.pyd
+flask-backend/models/__pycache__/
+flask-backend/models/*.pyc
+flask-backend/models/*.pyo
+flask-backend/models/*.pyd
+flask-backend/services/__pycache__/
+flask-backend/services/*.pyc
+flask-backend/services/*.pyo
+flask-backend/services/*.pyd
+flask-backend/utils/__pycache__/
+flask-backend/utils/*.pyc
+flask-backend/utils/*.pyo
+flask-backend/utils/*.pyd
 events/venv
 
 events/__pycache__/
@@ -34,3 +49,4 @@ events/*.pyd
 
 
 .aws-sam
+

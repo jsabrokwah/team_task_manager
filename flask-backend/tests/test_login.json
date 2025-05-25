@@ -1,0 +1,23 @@
+{
+    "version": "2.0",
+    "routeKey": "POST /login",
+    "rawPath": "/login",
+    "rawQueryString": "",
+    "headers": {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "host": "localhost:5000",
+        "user-agent": "curl/7.64.1"
+    },
+    "requestContext": {
+        "http": {
+            "method": "POST",
+            "path": "/login",
+            "protocol": "HTTP/1.1",
+            "sourceIp": "127.0.0.1",
+            "userAgent": "curl/7.64.1"
+        }
+    },
+    "body": "{\"username\": \"testuser\", \"password\": \"testpassword\"}",
+    "isBase64Encoded": false
+}

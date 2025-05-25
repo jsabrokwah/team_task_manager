@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.user_model import User
 from utils import jwt_helper
 from services.auth_service import AuthService
@@ -24,7 +25,7 @@ def login():
     return jsonify(access_token=access_token, refresh_token=refresh_token), 200
 
 @auth_bp.route('/refresh', methods=['POST'])
-@jwt_refresh_token_required
+@jwt_required
 def refresh():
     current_user = get_jwt_identity()
     access_token = jwt_helper.create_access_token(identity=current_user)
@@ -35,3 +36,9 @@ def refresh():
 def logout():
     # Implement logout logic if needed (e.g., blacklist the token)
     return jsonify({"msg": "Logout successful"}), 200 
+
+@auth_bp.route('/refresh', methods=['POST'])
+def refresh_token():
+    current_user = get_jwt_identity()
+    access_token = jwt_helper.create_access_token(identity=current_user)
+    return jsonify(access_token=access_token), 200

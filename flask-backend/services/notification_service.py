@@ -12,6 +12,7 @@ class NotificationService:
         message = f"Reminder: The task '{task_title}' is due on {due_date}."
         self.send_notification(user_email, subject, message)
 
+
     def send_notification(self, user_email, subject, message):
         response = self.sns_client.publish(
             TopicArn='arn:aws:sns:your-region:your-account-id:TaskNotifications',

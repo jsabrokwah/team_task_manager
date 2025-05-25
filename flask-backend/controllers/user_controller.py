@@ -5,6 +5,7 @@ from utils.validation import validate_user_data
 
 user_controller = Blueprint('user_controller', __name__)
 
+
 @user_controller.route('/user/create', methods=['POST'])
 def create_user():
     data = request.json

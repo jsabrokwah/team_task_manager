@@ -52,27 +52,28 @@ class TaskService:
     def delete_task(self, task_id):
         self.tasks_table.delete_item(Key={'task_id': task_id})
 
-def list_tasks(self, assigned_to=None, status=None):
-    filter_expression = []
-    expression_attribute_values = {}
+    def list_tasks(self, assigned_to=None, status=None):
+        filter_expression = []
+        expression_attribute_values = {}
 
-    if assigned_to:
-        filter_expression.append("assigned_to = :assigned_to")
-        expression_attribute_values[":assigned_to"] = assigned_to
+        if assigned_to:
+            filter_expression.append("assigned_to = :assigned_to")
+            expression_attribute_values[":assigned_to"] = assigned_to
 
-    if status:
-        filter_expression.append("status = :status")
-        expression_attribute_values[":status"] = status
+        if status:
+            filter_expression.append("status = :status")
+            expression_attribute_values[":status"] = status
 
-    try:
-        scan_kwargs = {}
-        if filter_expression:
-            scan_kwargs['FilterExpression'] = " AND ".join(filter_expression)
-            scan_kwargs['ExpressionAttributeValues'] = expression_attribute_values
 
-        response = self.tasks_table.scan(**scan_kwargs)
-        return response.get('Items', [])
-    except Exception as e:
-        print(f"Error listing tasks: {str(e)}")
-        return []
+        try:
+            scan_kwargs = {}
+            if filter_expression:
+                scan_kwargs['FilterExpression'] = " AND ".join(filter_expression)
+                scan_kwargs['ExpressionAttributeValues'] = expression_attribute_values
+
+            response = self.tasks_table.scan(**scan_kwargs)
+            return response.get('Items', [])
+        except Exception as e:
+            print(f"Error listing tasks: {str(e)}")
+            return []
     
