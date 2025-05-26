@@ -1,13 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const taskTableBody = document.querySelector('#task-table tbody');
-    
     // Check if user is authenticated
     if (!localStorage.getItem('access_token')) {
         window.location.href = 'index.html';
         return;
     }
-
-    // Fetch and display tasks assigned to the user
+    
+    const taskSelect = document.getElementById('task-select');
+    const taskUpdateForm = document.getElementById('task-update-form');
+    
+    // Load user's tasks
     function loadUserTasks() {
         fetch(`${config.apiBaseUrl}/tasks/me`, {
             headers: {
@@ -15,41 +16,24 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch tasks');
-            }
+            if (!response.ok) throw new Error('Failed to fetch tasks');
             return response.json();
         })
         .then(tasks => {
-            taskTableBody.innerHTML = '';
+            taskSelect.innerHTML = '<option value="">Select a task</option>';
             
             if (tasks && tasks.length > 0) {
                 tasks.forEach(task => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${task.title}</td>
-                        <td>${task.description}</td>
-                        <td>${task.status}</td>
-                        <td>${task.due_date}</td>
-                        <td>
-                            <button class="update-task" data-task-id="${task.task_id}">Update Status</button>
-                        </td>
-                    `;
-                    taskTableBody.appendChild(row);
-                });
-                
-                // Add event listeners to update buttons
-                document.querySelectorAll('.update-task').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const taskId = this.getAttribute('data-task-id');
-                        const newStatus = prompt('Enter new status (e.g., In Progress, Completed):');
-                        if (newStatus) {
-                            updateTaskStatus(taskId, newStatus);
-                        }
-                    });
+                    const option = document.createElement('option');
+                    option.value = task.task_id;
+                    option.textContent = `${task.title} (Current: ${task.status})`;
+                    taskSelect.appendChild(option);
                 });
             } else {
-                taskTableBody.innerHTML = '<tr><td colspan="5">No tasks assigned to you.</td></tr>';
+                const option = document.createElement('option');
+                option.disabled = true;
+                option.textContent = 'No tasks available';
+                taskSelect.appendChild(option);
             }
         })
         .catch(error => {
@@ -57,9 +41,19 @@ document.addEventListener('DOMContentLoaded', function() {
             showAlert('Failed to load tasks', 'error');
         });
     }
-
-    // Update task status
-    function updateTaskStatus(taskId, newStatus) {
+    
+    // Handle form submission
+    taskUpdateForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const taskId = taskSelect.value;
+        const newStatus = document.getElementById('status').value;
+        
+        if (!taskId || !newStatus) {
+            showAlert('Please select a task and status', 'error');
+            return;
+        }
+        
         fetch(`${config.apiBaseUrl}/tasks/${taskId}`, {
             method: 'PUT',
             headers: {
@@ -69,23 +63,19 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify({ status: newStatus })
         })
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to update task');
-            }
+            if (!response.ok) throw new Error('Failed to update task');
             return response.json();
         })
         .then(() => {
             showAlert('Task updated successfully', 'success');
-            loadUserTasks(); // Reload tasks
+            taskUpdateForm.reset();
+            loadUserTasks(); // Reload tasks with updated status
         })
         .catch(error => {
             console.error('Error:', error);
             showAlert('Failed to update task', 'error');
         });
-    }
-
-    // Initialize page
-    loadUserTasks();
+    });
     
     // Add logout functionality
     const logoutButton = document.getElementById('logoutButton');
@@ -104,4 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    
+    // Initialize the page
+    loadUserTasks();
 });

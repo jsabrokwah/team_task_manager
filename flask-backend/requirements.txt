@@ -9,7 +9,7 @@ click
 cryptography
 Flask
 flask-cors
-flask-jwt-extended
+flask-jwt-extended>=4.0.0
 aws-wsgi
 Flask-RESTful
 Flask-Testing

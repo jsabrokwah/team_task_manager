@@ -6,13 +6,20 @@
 # Note: Ensure you have the AWS SAM CLI installed to deploy this template.
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  JWTSecretKey:
+    Type: String
+    NoEcho: true
+    Description: Secret key for JWT token generation
+
 Resources:
   # DynamoDB Tables
   # Users table to store user information
   UsersTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: Users
+      TableName: !Sub "Users-${AWS::StackName}"
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: user_id
@@ -21,11 +28,11 @@ Resources:
         - AttributeName: user_id
           KeyType: HASH
 
-# Tasks table to store task information
+  # Tasks table to store task information
   TasksTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: Tasks
+      TableName: !Sub "Tasks-${AWS::StackName}"
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: task_id
@@ -33,6 +40,8 @@ Resources:
         - AttributeName: assigned_to
           AttributeType: S
         - AttributeName: status
+          AttributeType: S
+        - AttributeName: due_date
           AttributeType: S
       KeySchema:
         - AttributeName: task_id
@@ -50,6 +59,12 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
+        - IndexName: DueDateIndex
+          KeySchema:
+            - AttributeName: due_date
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
 
   # S3 Bucket for static website hosting
   StaticWebsiteBucket:
@@ -61,22 +76,9 @@ Resources:
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerPreferred
-      BucketName: static-website-bucket
+      BucketName: !Sub "task-management-static-${AWS::AccountId}-${AWS::Region}"
 
-  StaticWebsiteBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref StaticWebsiteBucket
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal: "*"
-            Action: "s3:GetObject"
-            Resource: 
-              Fn::Sub: "${StaticWebsiteBucket.Arn}/*"
-
-# IAM Roles for Lambda Functions
+  # IAM Roles for Lambda Functions
   # Role for Flask function to interact with DynamoDB and SNS
   FlaskFunctionRole:
     Type: AWS::IAM::Role
@@ -99,16 +101,24 @@ Resources:
                   - dynamodb:GetItem
                   - dynamodb:UpdateItem
                   - dynamodb:DeleteItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
                 Resource:
                   - !GetAtt UsersTable.Arn
                   - !GetAtt TasksTable.Arn
+                  - !Sub "${TasksTable.Arn}/index/*"
               - Effect: Allow
                 Action:
                   - sns:Publish
                 Resource: !Ref TaskNotificationTopic
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
 
   # Role for Reminder function to scan tasks and send notifications
-  # This function scans the Tasks table and sends reminders via SNS
   ReminderFunctionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -127,25 +137,39 @@ Resources:
               - Effect: Allow
                 Action:
                   - dynamodb:Scan
-                Resource: !GetAtt TasksTable.Arn
+                  - dynamodb:GetItem
+                Resource: 
+                  - !GetAtt TasksTable.Arn
+                  - !GetAtt UsersTable.Arn
               - Effect: Allow
                 Action:
                   - sns:Publish
                 Resource: !Ref TaskNotificationTopic
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
 
-                
   # Flask application for backend processing
-  # This function handles API requests and interacts with DynamoDB
   FlaskFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: flask-backend/
       Handler: app.lambda_handler
       Runtime: python3.12
+      MemorySize: 256
+      Timeout: 30
       Role: !GetAtt FlaskFunctionRole.Arn
       Environment:
         Variables:
           TASK_NOTIFICATION_TOPIC: !Ref TaskNotificationTopic
+          JWT_SECRET_KEY: !Ref JWTSecretKey
+          JWT_ACCESS_TOKEN_EXPIRES: 3600
+          JWT_REFRESH_TOKEN_EXPIRES: 604800
+          TASKS_TABLE: !Ref TasksTable
+          USERS_TABLE: !Ref UsersTable
       Policies:
         - DynamoDBCrudPolicy:
             TableName: 
@@ -161,34 +185,36 @@ Resources:
             Method: ANY
 
   # SNS Topic for task notifications
-  # This topic is used to send notifications about task updates
-  # and reminders to users
   TaskNotificationTopic:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: TaskNotifications
+      TopicName: !Sub "TaskNotifications-${AWS::StackName}"
       DisplayName: Task Notifications
-      
 
-# Reminder function to send daily reminders about tasks
-  # This function is triggered by a scheduled event and sends reminders
+  # Reminder function to send daily reminders about tasks
   ReminderFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: events/
       Handler: reminder_function.lambda_handler
       Runtime: python3.12
+      MemorySize: 256
+      Timeout: 60
       Role: !GetAtt ReminderFunctionRole.Arn
       Environment:
         Variables:
           TASK_NOTIFICATION_TOPIC: !Ref TaskNotificationTopic
+          TASKS_TABLE: !Ref TasksTable
+          USERS_TABLE: !Ref UsersTable
       Policies:
         - SNSPublishMessagePolicy:
-            TopicName: TaskNotifications
+            TopicName: !GetAtt TaskNotificationTopic.TopicName
         - DynamoDBReadPolicy:
             TableName:
               Ref: TasksTable
-
+        - DynamoDBReadPolicy:
+            TableName:
+              Ref: UsersTable
 
   ReminderRule:
     Type: AWS::Events::Rule
@@ -197,3 +223,21 @@ Resources:
       Targets:
         - Arn: !GetAtt ReminderFunction.Arn
           Id: ReminderTarget
+
+  # Permission for EventBridge to invoke the reminder function
+  ReminderFunctionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ReminderFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt ReminderRule.Arn
+
+Outputs:
+  ApiEndpoint:
+    Description: "API Gateway endpoint URL for the Flask application"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"
+  
+  WebsiteURL:
+    Description: "URL for the S3 website"
+    Value: !GetAtt StaticWebsiteBucket.WebsiteURL

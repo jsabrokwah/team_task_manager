@@ -1,30 +1,51 @@
+import boto3
+import os
+import json
+from botocore.exceptions import ClientError
+
 class NotificationService:
-    def __init__(self, sns_client):
-        self.sns_client = sns_client
-
-    def send_task_assignment_notification(self, user_email, task_title):
-        subject = "New Task Assigned"
-        message = f"You have been assigned a new task: {task_title}."
-        self.send_notification(user_email, subject, message)
-
-    def send_reminder_notification(self, user_email, task_title, due_date):
-        subject = "Task Reminder"
-        message = f"Reminder: The task '{task_title}' is due on {due_date}."
-        self.send_notification(user_email, subject, message)
-
-
-    def send_notification(self, user_email, subject, message):
-        response = self.sns_client.publish(
-            TopicArn='arn:aws:sns:your-region:your-account-id:TaskNotifications',
-            Message=message,
-            Subject=subject,
-            MessageAttributes={
-                'email': {
-                    'DataType': 'String',
-                    'StringValue': user_email
-                }
+    def __init__(self):
+        self.sns = boto3.client('sns')
+        self.topic_arn = os.environ.get('TASK_NOTIFICATION_TOPIC', 'default_topic_arn')
+        
+    def send_task_assignment_notification(self, task):
+        """Send notification when a task is assigned to a user"""
+        try:
+            message = {
+                "type": "TASK_ASSIGNED",
+                "task_id": task['task_id'],
+                "title": task['title'],
+                "assigned_to": task['assigned_to'],
+                "due_date": task['due_date']
             }
-        )
-        return response
-    
-    
+            
+            self.sns.publish(
+                TopicArn=self.topic_arn,
+                Message=json.dumps(message),
+                Subject=f"New Task Assigned: {task['title']}"
+            )
+            return True
+        except ClientError as e:
+            print(f"Error sending task assignment notification: {str(e)}")
+            return False
+            
+    def send_task_status_notification(self, task):
+        """Send notification when a task status is updated"""
+        try:
+            message = {
+                "type": "TASK_STATUS_UPDATED",
+                "task_id": task['task_id'],
+                "title": task['title'],
+                "status": task['status'],
+                "assigned_to": task['assigned_to']
+            }
+            
+            self.sns.publish(
+                TopicArn=self.topic_arn,
+                Message=json.dumps(message),
+                Subject=f"Task Status Updated: {task['title']}"
+            )
+            return True
+        except ClientError as e:
+            print(f"Error sending task status notification: {str(e)}")
+            return False

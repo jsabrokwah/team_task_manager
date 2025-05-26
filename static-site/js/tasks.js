@@ -1,52 +1,55 @@
-// filepath: /home/jsabrokwah/Desktop/GTP_DevOps/task_management_system/static-site/js/tasks.js
-
-const apiBaseUrl = 'https://your-api-url.com'; // Replace with your actual API URL
+// Task management functions
 
 // Function to create a new task
 async function createTask(taskData) {
     try {
-        const response = await fetch(`${apiBaseUrl}/tasks`, {
+        const response = await fetch(`${config.apiBaseUrl}/tasks`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
             },
             body: JSON.stringify(taskData),
         });
         if (!response.ok) {
             throw new Error('Failed to create task');
         }
-        const task = await response.json();
-        return task;
+        return await response.json();
     } catch (error) {
         console.error(error);
+        throw error;
     }
 }
 
 // Function to update an existing task
 async function updateTask(taskId, updates) {
     try {
-        const response = await fetch(`${apiBaseUrl}/tasks/${taskId}`, {
+        const response = await fetch(`${config.apiBaseUrl}/tasks/${taskId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
             },
             body: JSON.stringify(updates),
         });
         if (!response.ok) {
             throw new Error('Failed to update task');
         }
-        const updatedTask = await response.json();
-        return updatedTask;
+        return await response.json();
     } catch (error) {
         console.error(error);
+        throw error;
     }
 }
 
 // Function to delete a task
 async function deleteTask(taskId) {
     try {
-        const response = await fetch(`${apiBaseUrl}/tasks/${taskId}`, {
+        const response = await fetch(`${config.apiBaseUrl}/tasks/${taskId}`, {
             method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
         });
         if (!response.ok) {
             throw new Error('Failed to delete task');
@@ -54,37 +57,42 @@ async function deleteTask(taskId) {
         return true;
     } catch (error) {
         console.error(error);
+        throw error;
     }
 }
 
 // Function to fetch all tasks
 async function fetchAllTasks() {
     try {
-        const response = await fetch(`${apiBaseUrl}/tasks`);
+        const response = await fetch(`${config.apiBaseUrl}/tasks`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        });
         if (!response.ok) {
             throw new Error('Failed to fetch tasks');
         }
-        const tasks = await response.json();
-        return tasks;
+        return await response.json();
     } catch (error) {
         console.error(error);
+        throw error;
     }
 }
 
-// Function to fetch tasks assigned to a specific user
-async function fetchUserTasks(userId) {
+// Function to fetch tasks assigned to the current user
+async function fetchUserTasks() {
     try {
-        const response = await fetch(`${apiBaseUrl}/tasks/me`, {
+        const response = await fetch(`${config.apiBaseUrl}/tasks/me`, {
             headers: {
-                'User-ID': userId, // Assuming you send user ID in headers
-            },
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
         });
         if (!response.ok) {
             throw new Error('Failed to fetch user tasks');
         }
-        const tasks = await response.json();
-        return tasks;
+        return await response.json();
     } catch (error) {
         console.error(error);
+        throw error;
     }
 }
