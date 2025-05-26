@@ -1,6 +1,14 @@
+# This is an AWS SAM template for a serverless application with Flask backend, DynamoDB, S3, and SNS.
+# It includes a static website hosted on S3, a Flask application for backend processing,
+# a DynamoDB table for users and tasks, and an SNS topic for task notifications.
+# The template also includes a scheduled event to trigger a reminder function daily.
+
+# Note: Ensure you have the AWS SAM CLI installed to deploy this template.
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Resources:
+  # DynamoDB Tables
+  # Users table to store user information
   UsersTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -13,6 +21,7 @@ Resources:
         - AttributeName: user_id
           KeyType: HASH
 
+# Tasks table to store task information
   TasksTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -42,6 +51,7 @@ Resources:
           Projection:
             ProjectionType: ALL
 
+  # S3 Bucket for static website hosting
   StaticWebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -66,12 +76,76 @@ Resources:
             Resource: 
               Fn::Sub: "${StaticWebsiteBucket.Arn}/*"
 
+# IAM Roles for Lambda Functions
+  # Role for Flask function to interact with DynamoDB and SNS
+  FlaskFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: FlaskFunctionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                Resource:
+                  - !GetAtt UsersTable.Arn
+                  - !GetAtt TasksTable.Arn
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: !Ref TaskNotificationTopic
+
+  # Role for Reminder function to scan tasks and send notifications
+  # This function scans the Tasks table and sends reminders via SNS
+  ReminderFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ReminderFunctionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:Scan
+                Resource: !GetAtt TasksTable.Arn
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: !Ref TaskNotificationTopic
+
+                
+  # Flask application for backend processing
+  # This function handles API requests and interacts with DynamoDB
   FlaskFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: flask-backend/
       Handler: app.lambda_handler
       Runtime: python3.12
+      Role: !GetAtt FlaskFunctionRole.Arn
+      Environment:
+        Variables:
+          TASK_NOTIFICATION_TOPIC: !Ref TaskNotificationTopic
       Policies:
         - DynamoDBCrudPolicy:
             TableName: 
@@ -86,17 +160,28 @@ Resources:
             Path: /{proxy+}
             Method: ANY
 
+  # SNS Topic for task notifications
+  # This topic is used to send notifications about task updates
+  # and reminders to users
   TaskNotificationTopic:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: TaskNotifications
+      DisplayName: Task Notifications
+      
 
+# Reminder function to send daily reminders about tasks
+  # This function is triggered by a scheduled event and sends reminders
   ReminderFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: events/
       Handler: reminder_function.lambda_handler
       Runtime: python3.12
+      Role: !GetAtt ReminderFunctionRole.Arn
+      Environment:
+        Variables:
+          TASK_NOTIFICATION_TOPIC: !Ref TaskNotificationTopic
       Policies:
         - SNSPublishMessagePolicy:
             TopicName: TaskNotifications

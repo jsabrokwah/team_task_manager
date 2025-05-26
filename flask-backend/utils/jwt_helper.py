@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import jwt
 import os
 
-SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'asdfghjklqwertyuiop')
+SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
 ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
