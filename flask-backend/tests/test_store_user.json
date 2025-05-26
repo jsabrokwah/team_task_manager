@@ -1,0 +1,12 @@
+{
+    "version": "2.0",
+    "routeKey": "POST /user/create",
+    "rawPath": "/user/create",
+    "path": "/user/create",
+    "httpMethod": "POST",
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "body": "{\"name\": \"John Doe\", \"email\": \"johndoe@example.com\", \"password\": \"password123\"}",
+    "isBase64Encoded": false
+}

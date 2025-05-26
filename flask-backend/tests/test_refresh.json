@@ -1,0 +1,13 @@
+{
+    "version": "2.0",
+    "routeKey": "POST /refresh",
+    "rawPath": "/refresh",
+    "path": "/refresh",
+    "httpMethod": "POST",
+    "headers": {
+        "Authorization": "Bearer <REFRESH_TOKEN>",
+        "Content-Type": "application/json"
+    },
+    "body": "",
+    "isBase64Encoded": false
+}

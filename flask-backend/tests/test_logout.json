@@ -1,0 +1,14 @@
+{
+    "version": "2.0",
+    "routeKey": "POST /logout",
+    "rawPath": "/logout",
+    "path": "/logout",
+    "httpMethod": "POST",
+    "headers": {
+        "Authorization": "Bearer <ACCESS_TOKEN>",
+        "Content-Type": "application/json"
+    },
+    "queryStringParameters": {},
+    "body": "",
+    "isBase64Encoded": false
+}

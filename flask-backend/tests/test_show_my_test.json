@@ -1,0 +1,13 @@
+{
+    "version": "2.0",
+    "routeKey": "GET /tasks/me",
+    "rawPath": "/tasks/me",
+    "path": "/tasks/me",
+    "httpMethod": "GET",
+    "headers": {
+        "Authorization": "Bearer <ACCESS_TOKEN>",
+        "Content-Type": "application/json"
+    },
+    "body": "",
+    "isBase64Encoded": false
+}

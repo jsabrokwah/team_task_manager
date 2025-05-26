@@ -2,7 +2,9 @@
     "version": "2.0",
     "routeKey": "POST /login",
     "rawPath": "/login",
+    "path": "/login",
     "rawQueryString": "",
+    "queryStringParameters": {},
     "headers": {
         "accept": "application/json",
         "content-type": "application/json",
@@ -18,6 +20,7 @@
             "userAgent": "curl/7.64.1"
         }
     },
-    "body": "{\"username\": \"testuser\", \"password\": \"testpassword\"}",
+    "httpMethod": "POST", 
+    "body": "{\"email\": \"testuser@example.com\", \"password\": \"testpassword\"}",
     "isBase64Encoded": false
 }

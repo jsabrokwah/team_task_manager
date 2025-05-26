@@ -2,21 +2,22 @@ from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
-from mangum import Mangum
+import awsgi
+# from asgiref.wsgi import WsgiToAsgi
+# from mangum import Mangum
 from controllers import auth_controller
 from controllers.task_controller import TaskController
 from controllers import user_controller
 
 load_dotenv()
 
+# Use WsgiToAsgi to wrap the Flask app
+# app = WsgiToAsgi(Flask(__name__))
 app = Flask(__name__)
 CORS(app)
 
-
 # Initialize controllers
-# auth_controller = AuthController()
 task_controller = TaskController()
-# user_controller = UserController()
 
 # Set up routes
 app.add_url_rule('/login', view_func=auth_controller.login, methods=['POST'])
@@ -39,4 +40,5 @@ if __name__ == '__main__':
     app.run(debug=True)
 
 # For AWS Lambda compatibility
-lambda_handler = Mangum(app)    
+def lambda_handler(event, context):
+    return awsgi.response(app, event, context, base64_content_types={"image/png"})

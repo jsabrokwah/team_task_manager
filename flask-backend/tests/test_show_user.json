@@ -1,0 +1,13 @@
+{
+    "version": "2.0",
+    "routeKey": "GET /user/{user_id}",
+    "rawPath": "/user/user123",
+    "path": "/user/user123",
+    "httpMethod": "GET",
+    "headers": {
+        "Authorization": "Bearer <ACCESS_TOKEN>",
+        "Content-Type": "application/json"
+    },
+    "body": "",
+    "isBase64Encoded": false
+}

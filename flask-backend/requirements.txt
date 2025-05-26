@@ -10,7 +10,7 @@ cryptography
 Flask
 flask-cors
 flask-jwt-extended
-mangum
+aws-wsgi
 Flask-RESTful
 Flask-Testing
 idna

@@ -1,0 +1,13 @@
+{
+    "version": "2.0",
+    "routeKey": "PUT /tasks/{task_id}",
+    "rawPath": "/tasks/task123",
+    "path": "/tasks/task123",
+    "httpMethod": "PUT",
+    "headers": {
+        "Authorization": "Bearer <ACCESS_TOKEN>",
+        "Content-Type": "application/json"
+    },
+    "body": "{\"title\": \"Updated Task Title\", \"description\": \"Updated description\"}",
+    "isBase64Encoded": false
+}

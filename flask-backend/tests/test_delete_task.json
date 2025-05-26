@@ -1,0 +1,13 @@
+{
+    "version": "2.0",
+    "routeKey": "DELETE /tasks/{task_id}",
+    "rawPath": "/tasks/task123",
+    "path": "/tasks/task123",
+    "httpMethod": "DELETE",
+    "headers": {
+        "Authorization": "Bearer <ACCESS_TOKEN>",
+        "Content-Type": "application/json"
+    },
+    "body": "",
+    "isBase64Encoded": false
+}

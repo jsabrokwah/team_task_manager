@@ -1,0 +1,13 @@
+{
+    "version": "2.0",
+    "routeKey": "PUT /user/update/{user_id}",
+    "rawPath": "/user/update/user123",
+    "path": "/user/update/user123",
+    "httpMethod": "PUT",
+    "headers": {
+        "Authorization": "Bearer <ACCESS_TOKEN>",
+        "Content-Type": "application/json"
+    },
+    "body": "{\"name\": \"John Updated\", \"email\": \"johnupdated@example.com\"}",
+    "isBase64Encoded": false
+}

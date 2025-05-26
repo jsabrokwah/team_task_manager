@@ -1,0 +1,13 @@
+{
+    "version": "2.0",
+    "routeKey": "DELETE /user/delete/{user_id}",
+    "rawPath": "/user/delete/user123",
+    "path": "/user/delete/user123",
+    "httpMethod": "DELETE",
+    "headers": {
+        "Authorization": "Bearer <ACCESS_TOKEN>",
+        "Content-Type": "application/json"
+    },
+    "body": "",
+    "isBase64Encoded": false
+}
