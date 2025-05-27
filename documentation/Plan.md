@@ -52,7 +52,7 @@ Design and implement a Task Management System for a field team using AWS serverl
 
 * **Flask App:**
 
-  * Implement authentication endpoints (`/user/create`, `/user/update/{user_id}`, `/user/delete/{user_id}`, `/user/all`, ` /user/{user_id}`, `/login`, `/refresh`, `/logout`, ) issuing JWTs and storing refresh tokens in DynamoDB.
+  * Implement authentication endpoints (`/user/create`, `/user/update/{user_id}`, `/user/delete/{user_id}`, `/user/all`, ` /user/{user_id}`, `/login`, `/refresh`, `/logout`,`/signup` ) issuing JWTs and storing refresh tokens in DynamoDB.
   * CRUD endpoints for Tasks: create, assign, list by user/admin, update status.
 * **Integrations:**
 

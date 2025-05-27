@@ -1,52 +1,55 @@
-vscode/
-node_modules/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
 dist/
-package-lock.json
-yarn-error.log
-*.log
-*.tsbuildinfo
-*.tgz
-*.zip
-*.tar
-*.tar.gz
-*.tar.bz2
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+venv
+ENV/
+env/
+
+# IDE
 .idea/
-flask-backend/venv/
-flask-backend/__pycache__/
-flask-backend/*.pyc
-flask-backend/*.pyo
-flask-backend/*.pyd
-flask-backend/*.egg-info/
-flask-backend/.pytest_cache/
-flask-backend/.mypy_cache/
-flask-backend/.coverage
-flask-backend/.coverage.*
-flask-backend/.hypothesis/
-flask-backend/.hypothesis/
-flask-backend/.env
-flask-backend/controllers/__pycache__/
-flask-backend/controllers/*.pyc
-flask-backend/controllers/*.pyo
-flask-backend/controllers/*.pyd
-flask-backend/models/__pycache__/
-flask-backend/models/*.pyc
-flask-backend/models/*.pyo
-flask-backend/models/*.pyd
-flask-backend/services/__pycache__/
-flask-backend/services/*.pyc
-flask-backend/services/*.pyo
-flask-backend/services/*.pyd
-flask-backend/utils/__pycache__/
-flask-backend/utils/*.pyc
-flask-backend/utils/*.pyo
-flask-backend/utils/*.pyd
-events/venv
+.vscode/
+*.swp
+*.swo
 
-events/__pycache__/
-events/*.pyc
-events/*.pyo
-events/*.pyd
+# AWS SAM
+.aws-sam/
+samconfig.toml
 
+# Environment variables
+.env.local
+.env.*.local
+.env
 
-.aws-sam
+# Logs
+logs/
+*.log
 
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Local development
+.coverage
+htmlcov/
+.pytest_cache/

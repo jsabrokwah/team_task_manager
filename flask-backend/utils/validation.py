@@ -61,7 +61,7 @@ def validate_registration(registration_data):
     if not isinstance(registration_data, dict):
         raise BadRequest("Registration data must be a JSON object.")
     
-    required_fields = ['name', 'email', 'password']
+    required_fields = ['name', 'email', 'password','role']
     for field in required_fields:
         if field not in registration_data:
             raise BadRequest(f"Missing required field: {field}")

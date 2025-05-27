@@ -1,8 +1,2 @@
-boto3
-botocore
-jmespath
-python-dateutil
-python-dotenv
-s3transfer
-six
-urllib3
+boto3==1.28.62
+python-dateutil==2.8.2

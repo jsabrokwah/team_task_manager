@@ -1,9 +1,9 @@
-// Configuration file for the Task Management System frontend
-// Replace these values with the actual endpoints from your deployment
+// Local configuration file for the Task Management System frontend
+// Use this for local development testing
 
 const config = {
-    // API endpoint from CloudFormation output
-    apiBaseUrl: 'https://your-api-id.execute-api.your-region.amazonaws.com/',
+    // Local API endpoint
+    apiBaseUrl: 'http://127.0.0.1:5000/',
     
     // Authentication endpoints
     authEndpoints: {

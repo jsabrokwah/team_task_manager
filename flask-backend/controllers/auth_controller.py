@@ -9,6 +9,19 @@ from utils.validation import validate_login, validate_registration
 auth_bp = Blueprint('auth', __name__)
 auth_service = AuthService(User, jwt_helper)
 
+def signup():
+    data = request.get_json()
+        # Use the role from the request or default to 'member' if not provided
+    if 'role' not in data:
+        data['role'] = 'member'
+    try:
+        validate_registration(data)
+    except Exception as e:
+        return jsonify({"errors": str(e)}), 400
+
+    result, status_code = auth_service.register_user(data)
+    return jsonify(result), status_code
+
 def login():
     data = request.get_json()
     try:

@@ -30,6 +30,12 @@ class AuthService:
         if existing_user:
             return {"message": "User with this email already exists"}, 400
         
+        #Check if admin user already exists
+        if user_data['role'] == 'admin':
+            existing_admin = User.get_user_by_role('admin')
+            if existing_admin:
+                return {"message": "Admin user already exists"}, 400
+        
         # Hash the password
         user_data['hashed_password'] = generate_password_hash(user_data['password'])
         del user_data['password']  # Remove plain password for security

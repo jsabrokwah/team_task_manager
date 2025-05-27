@@ -31,7 +31,16 @@ button {
 }
 
 button:hover {
-    background: #e8491d;
+    background: #0c6183;
+}
+
+.signup{
+    background: #35424a;
+    text-decoration: none;
+    color: #ffffff;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
 }
 
 form {

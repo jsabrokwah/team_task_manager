@@ -3,8 +3,8 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 import os
-import awsgi
 import logging
+import boto3
 from controllers.auth_controller import login, logout, refresh_token,signup
 from controllers.task_controller import TaskController
 from controllers.user_controller import create_user, update_user, delete_user, get_all_users, get_user
@@ -15,6 +15,13 @@ logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
+
+# Import local config for development
+try:
+    import local_config
+    logger.info("Loaded local development configuration")
+except ImportError:
+    logger.info("No local configuration found, using default settings")
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -29,6 +36,15 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = int(os.environ.get('JWT_ACCESS_TOKEN_EX
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = int(os.environ.get('JWT_REFRESH_TOKEN_EXPIRES', 604800))  # 1 week default
 
 jwt = JWTManager(app)
+
+# Configure DynamoDB for local development
+dynamodb = boto3.resource(
+    'dynamodb',
+    endpoint_url=os.environ.get('DYNAMODB_ENDPOINT', None),
+    region_name=os.environ.get('AWS_REGION', 'us-east-1'),
+    aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID', None),
+    aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY', None)
+)
 
 # Initialize controllers
 task_controller = TaskController()
@@ -68,7 +84,3 @@ app.add_url_rule('/user/<user_id>', view_func=get_user, methods=['GET'])
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-# For AWS Lambda compatibility
-def lambda_handler(event, context):
-    return awsgi.response(app, event, context, base64_content_types={"image/png"})

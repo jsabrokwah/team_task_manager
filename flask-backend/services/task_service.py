@@ -1,17 +1,22 @@
 from datetime import datetime, timezone
 import uuid
 import boto3
+import os
+import logging
 from botocore.exceptions import ClientError
 from services.notification_service import NotificationService
+
+logger = logging.getLogger(__name__)
 
 class TaskService:
     def __init__(self, dynamodb_resource):
         self.dynamodb = dynamodb_resource
         try:
-            self.tasks_table = self.dynamodb.Table('Tasks')
+            tasks_table_name = os.environ.get('TASKS_TABLE', 'Tasks')
+            self.tasks_table = self.dynamodb.Table(tasks_table_name)
             self.notification_service = NotificationService()
         except Exception as e:
-            print(f"Error initializing TaskService: {str(e)}")
+            logger.error(f"Error initializing TaskService: {str(e)}")
             raise
 
     def create_task(self, task_data):
@@ -40,7 +45,7 @@ class TaskService:
             self.notification_service.send_task_assignment_notification(item)
             return item
         except ClientError as e:
-            print(f"Error creating task: {str(e)}")
+            logger.error(f"Error creating task: {str(e)}")
             return None
 
     def get_task(self, task_id):
@@ -48,7 +53,7 @@ class TaskService:
             response = self.tasks_table.get_item(Key={'task_id': task_id})
             return response.get('Item')
         except ClientError as e:
-            print(f"Error getting task: {str(e)}")
+            logger.error(f"Error getting task: {str(e)}")
             return None
 
     def update_task(self, task_id, updates):
@@ -78,7 +83,7 @@ class TaskService:
                 
             return updated_task
         except ClientError as e:
-            print(f"Error updating task: {str(e)}")
+            logger.error(f"Error updating task: {str(e)}")
             return None
 
     def delete_task(self, task_id):
@@ -90,7 +95,7 @@ class TaskService:
             self.tasks_table.delete_item(Key={'task_id': task_id})
             return True
         except ClientError as e:
-            print(f"Error deleting task: {str(e)}")
+            logger.error(f"Error deleting task: {str(e)}")
             return False
 
     def list_tasks(self, assigned_to=None, status=None):
@@ -126,5 +131,5 @@ class TaskService:
                 
             return items
         except ClientError as e:
-            print(f"Error listing tasks: {str(e)}")
+            logger.error(f"Error listing tasks: {str(e)}")
             return []

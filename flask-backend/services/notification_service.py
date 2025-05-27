@@ -1,12 +1,17 @@
 import boto3
 import os
 import json
+import logging
 from botocore.exceptions import ClientError
+
+logger = logging.getLogger(__name__)
 
 class NotificationService:
     def __init__(self):
         self.sns = boto3.client('sns')
-        self.topic_arn = os.environ.get('TASK_NOTIFICATION_TOPIC', 'default_topic_arn')
+        self.topic_arn = os.environ.get('TASK_NOTIFICATION_TOPIC')
+        if not self.topic_arn:
+            logger.warning("TASK_NOTIFICATION_TOPIC environment variable not set")
         
     def send_task_assignment_notification(self, task):
         """Send notification when a task is assigned to a user"""
@@ -26,7 +31,7 @@ class NotificationService:
             )
             return True
         except ClientError as e:
-            print(f"Error sending task assignment notification: {str(e)}")
+            logger.error(f"Error sending task assignment notification: {str(e)}")
             return False
             
     def send_task_status_notification(self, task):
@@ -47,5 +52,5 @@ class NotificationService:
             )
             return True
         except ClientError as e:
-            print(f"Error sending task status notification: {str(e)}")
+            logger.error(f"Error sending task status notification: {str(e)}")
             return False

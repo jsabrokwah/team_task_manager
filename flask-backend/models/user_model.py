@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 import boto3
 import uuid
+import os
 import logging
 from botocore.exceptions import ClientError
 
@@ -20,7 +21,8 @@ class User:
     def create_user(user_data):
         dynamodb = boto3.resource('dynamodb')
         try:
-            table = dynamodb.Table('Users')
+            users_table_name = os.environ.get('USERS_TABLE', 'Users')
+            table = dynamodb.Table(users_table_name)
             
             # Generate user_id if not provided
             if 'user_id' not in user_data:
@@ -54,7 +56,8 @@ class User:
     def get_user(user_id):
         dynamodb = boto3.resource('dynamodb')
         try:
-            table = dynamodb.Table('Users')
+            users_table_name = os.environ.get('USERS_TABLE', 'Users')
+            table = dynamodb.Table(users_table_name)
             response = table.get_item(Key={'user_id': user_id})
             return response.get('Item')
         except ClientError as e:
@@ -68,7 +71,8 @@ class User:
     def get_all_users():
         dynamodb = boto3.resource('dynamodb')
         try:
-            table = dynamodb.Table('Users')
+            users_table_name = os.environ.get('USERS_TABLE', 'Users')
+            table = dynamodb.Table(users_table_name)
             response = table.scan()
             items = response.get('Items', [])
             
@@ -89,7 +93,8 @@ class User:
     def get_user_by_email(email):
         dynamodb = boto3.resource('dynamodb')
         try:
-            table = dynamodb.Table('Users')
+            users_table_name = os.environ.get('USERS_TABLE', 'Users')
+            table = dynamodb.Table(users_table_name)
             response = table.scan(
                 FilterExpression="email = :email",
                 ExpressionAttributeValues={":email": email}
@@ -104,10 +109,30 @@ class User:
             return None
 
     @staticmethod
+    def get_user_by_role(role):
+        dynamodb = boto3.resource('dynamodb')
+        try:
+            users_table_name = os.environ.get('USERS_TABLE', 'Users')
+            table = dynamodb.Table(users_table_name)
+            response = table.scan(
+                FilterExpression="role = :role",
+                ExpressionAttributeValues={":role": role}
+            )
+            items = response.get('Items', [])
+            return items
+        except ClientError as e:
+            logger.error(f"Error getting user by role: {e}")
+            return []
+        except Exception as e:
+            logger.error(f"Unexpected error getting user by role: {e}")
+            return []
+        
+    @staticmethod
     def update_user(user_id, update_data):
         dynamodb = boto3.resource('dynamodb')
         try:
-            table = dynamodb.Table('Users')
+            users_table_name = os.environ.get('USERS_TABLE', 'Users')
+            table = dynamodb.Table(users_table_name)
 
             # Check if user exists
             user = User.get_user(user_id)
@@ -142,7 +167,8 @@ class User:
     def delete_user(user_id):
         dynamodb = boto3.resource('dynamodb')
         try:
-            table = dynamodb.Table('Users')
+            users_table_name = os.environ.get('USERS_TABLE', 'Users')
+            table = dynamodb.Table(users_table_name)
             
             # Check if user exists
             user = User.get_user(user_id)

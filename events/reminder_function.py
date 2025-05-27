@@ -81,7 +81,8 @@ def lambda_handler(event, context):
             try:
                 # Get user details to personalize the message
                 user_id = task.get('assigned_to')
-                user_table = dynamodb.Table('Users')
+                users_table_name = os.environ.get('USERS_TABLE', 'Users')
+                user_table = dynamodb.Table(users_table_name)
                 user_response = user_table.get_item(Key={'user_id': user_id})
                 user = user_response.get('Item', {})
                 user_name = user.get('name', 'Team Member')

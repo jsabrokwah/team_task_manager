@@ -76,7 +76,25 @@ Resources:
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerPreferred
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
       BucketName: !Sub "task-management-static-${AWS::AccountId}-${AWS::Region}"
+      
+  # Bucket policy to allow public read access
+  StaticWebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref StaticWebsiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub 'arn:aws:s3:::${StaticWebsiteBucket}/*'
 
   # IAM Roles for Lambda Functions
   # Role for Flask function to interact with DynamoDB and SNS
@@ -183,6 +201,13 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: ANY
+            Auth:
+              Authorizers: {}
+            CorsConfiguration:
+              AllowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+              AllowHeaders: ['Content-Type', 'Authorization', 'X-Amz-Date', 'X-Api-Key']
+              AllowOrigins: ['*']
+              MaxAge: 600
 
   # SNS Topic for task notifications
   TaskNotificationTopic:
@@ -241,3 +266,7 @@ Outputs:
   WebsiteURL:
     Description: "URL for the S3 website"
     Value: !GetAtt StaticWebsiteBucket.WebsiteURL
+    
+  WebsiteBucket:
+    Description: "S3 bucket name for the static website"
+    Value: !Ref StaticWebsiteBucket
